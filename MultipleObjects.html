@@ -21,23 +21,23 @@
   
   h1{
     color: #187F8C;
-    font-size: 48px;
+    font-size: 55px;
     font-family: 'Aref Ruqaa', serif;
     
   }
   .btn1 {
-  font-family: 'Roboto Condensed', sans-serif;
-  background-color: #554C4C;
-  border: none;
-  color: white;
-  padding: 2px 30px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 16px;
-  margin: 4px 2px;
-  cursor: pointer;
-} 
+    font-family: 'Roboto Condensed', sans-serif;
+    background-color: #554C4C;
+    border: none;
+    color: white;
+    padding: 2px 30px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+  } 
 </style>
 </head>
 <!------------Body------------>
@@ -45,19 +45,19 @@
 <br><br>
 <h1>MULTIPLE OBJECTS </h1>
 <div class="button">
-  <button class="btn1" type="submit"> Back </br> <<< </button>
-  <button class="btn1" type="submit">Next </br> >>> </button>
-<br><br>
+  <button class="btn1" type="submit" onclick="TakeMeToBack()"> Back </br> <<< </button>
+  <button class="btn1" type="submit" onclick="TakeMeToNext()">Next </br> >>> </button>
+</div><br><br>
 <div class="container">
   <!----In this container you copy all the shit.-----> 
 </div>
-
-</div>
+<script>
+function TakeMeToBack() {
+  location.replace("http://localhost:8080/WEB/index.html")
+} 
+function TakeMeToNext() {
+  location.replace("http://localhost:8080/WEB/3DTextViewer.html")
+} 
+</script>
 </body>
 </html>
-
-
-
-
-
-

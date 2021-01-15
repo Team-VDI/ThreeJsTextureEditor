@@ -11,6 +11,17 @@
 <title>WebGL</title>
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+
+<! -- Three.js bibliotēku importēšana -->
+<script src="libs/three.js"></script>
+<script src="libs/dat.gui.js"></script>
+<script src="libs/three.min.js"></script>
+<script src="libs/three.module.js"></script>
+<script src="libs/OrbitControls.js"></script>
+
+<! -- JQUERY bibliotēku importēšana -->
+<script src="https://code.jquery.com/jquery-2.2.4.js"></script>
+
 <style>
 	body {
 		color: #fff;
@@ -44,12 +55,355 @@
 <body>
 <br><br>
 <h1>MULTIPLE OBJECTS </h1>
+
 <div class="button">
   <button class="btn1" type="submit" onclick="TakeMeToBack()"> Back </br> <<< </button>
   <button class="btn1" type="submit" onclick="TakeMeToNext()">Next </br> >>> </button>
 </div><br><br>
+
 <div class="container">
-  <!----In this container you copy all the shit.-----> 
+  <script>
+    THREE.ImageUtils.crossOrigin = '';
+    var controls, gui, parameters,sphere;
+            //--------------------------------------
+            // --------Scene parameters -----------
+            //--------------------------------------
+            //Izveido Three.js scēnu
+            var scene = new THREE.Scene(); //creating Three.js scene
+            //mainīgie scēnas izmēra norādīšana / loga izmēri
+            var width = window.innerWidth,
+                height = window.innerHeight;
+        
+            //--------------------------------------
+            // --------Camera parameters -----------
+            //--------------------------------------
+            var view_angle = 20,
+                aspect = width/height,
+                near = 0.1,
+                far = 2000;
+
+            //Define kameru  
+            var camera = new THREE.PerspectiveCamera(view_angle, aspect, near, far); //creating camera
+            //izveido vizuālizatoru, nosaka tā izmērus un pievieno body elementam
+            var renderer = new THREE.WebGLRenderer({color: 0xffffff }); //create renderer,set its size,add to body
+            renderer.setSize(width, height);
+            renderer.setClearColor(0x2D2727 , 1); //background color
+            document.body.appendChild(renderer.domElement);
+            //kameras kontroles elements
+            var controls = new THREE.OrbitControls( camera, renderer.domElement );
+            
+            //--------------------------------------
+            // -----------Lighting -----------------
+            //--------------------------------------
+            // izveido punkta gaismu baltā krāsā
+            var pointLight = new THREE.PointLight(0xFFFFFF);
+            pointLight.position.x = 10;
+            pointLight.position.y = 20;
+            pointLight.position.z = 50;
+            // pievieno gaismu scēnai       
+            scene.add(pointLight);
+            //new ambient light
+            var lightAmb = new THREE.AmbientLight(0x333333); 
+            lightAmb.position.set(10,20,50);
+            scene.add(lightAmb);
+
+            //--------------------------------------
+            // -------- Koord. plakne --------------
+            //--------------------------------------
+            //uzzime plakni zem objekta 
+            //izmeri
+            var planeGeometry = new THREE.PlaneGeometry(100,100,20,20);
+            //materiala krasa etc.
+            var planeMaterial = new THREE.MeshBasicMaterial( {
+                color: 0xFF0000, 
+                side: THREE.DoubleSide, 
+                wireframe:true} );
+
+            var plane = new THREE.Mesh( planeGeometry, planeMaterial );
+            plane.rotation.x = -Math.PI/3;
+            plane.position.set(0,-6,0);
+            scene.add(plane);
+            
+            //--------------------------------------
+            // -------- Cube parameters ----------
+            //--------------------------------------
+            //kuba parametri 
+            var cubeWidth = 3,
+                cubeHeight = 3,
+                cubeDepth = 3;
+                
+            var cubeGeometry = new THREE.BoxGeometry(cubeWidth, cubeHeight, cubeDepth);
+            var cubeMaterial = new THREE.MeshLambertMaterial({color: 0x2EFE2E});//zaļš
+            var cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
+
+            cube.rotation.x = Math.PI/10; //18 grādu pagrieziens
+            cube.rotation.y = Math.PI/10; //18 grādu pagrieziens
+            cube.position.set(10,0,0);
+            scene.add(cube);
+
+            //--------------------------------------
+            // -------- Textured cube/box ----------
+            //--------------------------------------
+            var cubeWidth = 3,
+                cubeHeight = 3,
+                cubeDepth = 3;
+                
+            var cubeGeometry = new THREE.BoxGeometry(cubeWidth, cubeHeight, cubeDepth);
+            var cubeMaterial = new THREE.MeshLambertMaterial({color: 0x2EFE2E});//zaļš
+            var cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
+
+            cube.rotation.x = Math.PI/10; //18 grādu pagrieziens
+            cube.rotation.y = Math.PI/10; //18 grādu pagrieziens
+            cube.position.set(-10,0,0);
+            scene.add(cube);
+
+            //--------------------------------------
+            // ------- Cylinder parameters ---------
+            //--------------------------------------
+            var cylGeometry = new THREE.CylinderGeometry( 2, 2, 4, 30 ); //radiusTop, radiusBottom, height, radiusSegments, heightSegments
+            var cylMaterial = new THREE.MeshLambertMaterial({color: 0x009900}); //zaļš
+            var cylinder = new THREE.Mesh( cylGeometry, cylMaterial );
+            cylinder.rotation.x = Math.PI/10; //18 grādi
+            cylinder.rotation.y = Math.PI/10; //18 grādi
+            cylinder.position.set (-30, 0, 0);
+            scene.add(cylinder);
+                
+            //--------------------------------------
+            // ------- Cone parameters -------------
+            //--------------------------------------
+            var coneGeometry = new THREE.CylinderGeometry( 0, 2, 4, 30 );//radiusTop, radiusBottom, height, radiusSegments, heightSegments
+            var coneMaterial = new THREE.MeshLambertMaterial({color: 0x0174DF});//zils
+            var cone = new THREE.Mesh( coneGeometry, coneMaterial );
+            cone.rotation.x = Math.PI/10; //18 grādi
+            cone.rotation.y = Math.PI/10; //18 grādi
+            cone.position.set (20, 0, 0);
+            scene.add(cone);
+            
+            //--------------------------------------
+            // ----------- Texturing  --------------
+            //--------------------------------------
+            var radius = 2,
+                segments = 16,
+                rings = 16;
+                
+            //izveido lodes ģeometriju ar nepieciešamajiem parametriem
+            var geometry = new THREE.SphereGeometry( radius, segments, rings );
+            var earthMaterial = new THREE.MeshPhongMaterial();
+
+            earthMaterial.map = THREE.ImageUtils.loadTexture('textures/earthmap1k.jpg');
+            earthMaterial.bumpMap = THREE.ImageUtils.loadTexture('textures/earth_bump.png');
+            earthMaterial.bumpScale = 0.8;
+
+            var earth = new THREE.Mesh(geometry, earthMaterial);
+            earth.position.set (15, 0, 10);
+            scene.add(earth);
+
+            //--------------------------------------
+            // -------- Sphere parameters ----------
+            //-------------------------------------
+            //sferas parametri
+            var radius = 5,
+                segments = 16,
+                rings = 16;
+            //creating sphere geometry with all required parameters
+            var geometry = new THREE.SphereGeometry( radius, segments, rings );
+            //creating sphere material and setting most required parameters
+            var material = new THREE.MeshPhongMaterial({color: 0x0174DF, wireframe:false, transparent:true, shading:THREE.SmoothShading});//blue
+            //putting all together in a Mesh
+            var sphere = new THREE.Mesh(geometry, material);
+            //setting its position
+            sphere.position.set (0, 0, 0);
+            scene.add(sphere);
+            camera.position.z = 90;
+            
+            //-------------------------------------
+            //GUI elementa piesaistisana/definesana
+            //-------------------------------------
+            var gui = new dat.GUI();
+            gui.domElement.id = 'gui';
+            
+            //GUI sakuma parametru definesana
+            parameters = 
+            {
+                x: 0, y: 0, z: 0,
+                color:  "#0174DF", // color (change "#" to "0x")
+                ambColor:"#000000",
+                emisColor: "#000033", // color (change "#" to "0x")
+                specColor: "#161a20", // color (change "#" to "0x")
+                wir:false,
+                material: "Phong",
+                shininess: 30,
+                opacity: 1,
+                LightColor: "#ffffff",
+                reset: function() { resetSphere() }
+            };
+        
+            //Izmainas opcijas/limiti
+            var folder1 = gui.addFolder('Change Position');
+            var sphereX = folder1.add(parameters, 'x' ).min(-10).max(10).step(0.1).listen();
+            var sphereY = folder1.add(parameters, 'y' ).min(-5).max(5).step(0.1).listen();
+            var sphereZ = folder1.add(parameters, 'z' ).min(-200).max(50).step(0.1).listen();
+            
+            var folder2 = gui.addFolder('Sphere display');
+            var folder3 = gui.addFolder('Lighting');
+            var folder4 = gui.addFolder('Texturing');
+        
+            var sphereColor = folder2.addColor( parameters, 'color' ).name('Color').listen();
+            
+            sphereColor.onChange(function(value) // onFinishChange
+            {   sphere.material.color.setHex( value.replace("#", "0x") );   });
+            
+            //--------------------------------------
+            // ------- Folder2 definitions -----------
+            //--------------------------------------
+            //ambient
+            var sphereColorAmb = folder2.addColor( parameters, 'ambColor' ).name('Ambient color').listen();
+            sphereColorAmb.onChange(function(value) // onFinishChange
+            {   sphere.material.ambient.setHex( value.replace("#", "0x") );   });
+            
+            //emissive
+            var sphereColorEmis = folder2.addColor( parameters, 'emisColor' ).name('Emissive color').listen();
+            sphereColorEmis.onChange(function(value) // onFinishChange
+            {   sphere.material.emissive.setHex( value.replace("#", "0x") );   });
+            
+            //specular
+            var sphereColorSpec = folder2.addColor( parameters, 'specColor' ).name('Specular color').listen();
+            sphereColorSpec.onChange(function(value) // onFinishChange
+            {   sphere.material.specular.setHex(value.replace("#", "0x") ); });
+            
+            //shininess
+            var sphereShininess = folder2.add( parameters, 'shininess' ).min(0).max(100).step(1).name('Shininess amount').listen();
+            sphereShininess.onChange(function(value)
+            {   sphere.material.shininess = value;});
+            
+            //opacity
+            var sphereOpacity = folder2.add( parameters, 'opacity' ).min(0).max(1).step(0.01).name('Opacity value').listen();
+            sphereOpacity.onChange(function(value)
+            {   sphere.material.opacity = value;});
+            
+            //material types
+            var sphereMaterial = folder2.add( parameters, 'material', [ "Basic", "Lambert", "Phong" ] ).name('Material Type').listen();
+            sphereMaterial.onChange(function(value) 
+            {   updateSphere();   });
+
+            //wireframe checkbox
+            var wirBox = folder2.add(parameters, 'wir').name('Wireframe').listen();
+            wirBox.onChange(function(value)  //dangerous
+            {   sphere.material.wireframe = value;   }); //dangerous
+        
+            //--------------------------------------
+            //------- Folder3 definitions ----------
+            //--------------------------------------
+            var LightColor = folder3.addColor(parameters, 'LightColor' ).name('Lighting Color').listen();
+            LightColor.onChange(function(value) 
+            { pointLight.color.setHex(value.replace("#", "0x") );});
+            //on axis change
+            sphereX.onChange(function(value) { 
+                sphere.position.x = value; });
+            sphereY.onChange(function(value) { 
+                sphere.position.y = value; });
+            sphereZ.onChange(function(value) { 
+                sphere.position.z = value; });
+            
+            folder2.open();
+            gui.add( parameters, 'reset' ).name("Reset Sphere Parameters");
+            gui.open();
+            updateSphere();
+
+            //-------------------------------------------
+            // -- Update/Reset oject values to default -----
+            //-------------------------------------------
+            function updateSphere()
+            {
+                var value = parameters.material;
+                var flatVal = parameters.flat;
+                var newMaterial;
+                
+                if (value == "Basic"){
+                    newMaterial = new THREE.MeshBasicMaterial( { color: 0x000000,transparent:true} );
+                }
+                else if (value == "Lambert"){
+                    newMaterial = new THREE.MeshLambertMaterial( { color: 0x000000,transparent:true } );
+                }
+                else if (value == "Phong") {
+                    newMaterial = new THREE.MeshPhongMaterial( { color: 0x000000,transparent:true} );   
+                }
+            
+                sphere.position.x = parameters.x;
+                sphere.position.y = parameters.y;
+                sphere.position.z = parameters.z;
+                sphere.material = newMaterial;
+                sphere.material.color.setHex( parameters.color.replace("#", "0x") );
+                sphere.material.ambient.setHex( parameters.ambColor.replace("#", "0x") );
+                sphere.material.emissive.setHex( parameters.ambColor.replace("#", "0x") );
+                sphere.material.specular.setHex( parameters.specColor.replace("#", "0x") );
+                sphere.material.shininess = parameters.shininess;
+                sphere.material.opacity = parameters.opacity; 
+                sphere.material.transparent = true;
+            }
+            
+            function resetSphere()
+            {
+                parameters.color = "#0174DF";
+                parameters.ambColor = "#000000";
+                parameters.emisColor = "#000033";
+                parameters.specColor = "#161a20";
+                parameters.material = "Phong";
+                parameters.shininess = 30;
+                parameters.opacity = 1;
+                parameters.x = 0;
+                parameters.y = 0;
+                parameters.z = 0;
+                updateSphere();
+            }
+            
+            //--------------------------------------
+            // -- Hide item after button click -----
+            //--------------------------------------
+            function hideItem() {
+                var x = document.getElementById("myDIV");
+                if (x.style.display === "none") {
+                    x.style.display = "block";
+                } else {
+                    x.style.display = "none";
+                }
+            }
+
+            //--------------------------------------
+            // ---------- Set Favicon --------------
+            //--------------------------------------
+            function change_favicon(img) {
+                var favicon = document.querySelector('link[rel="shortcut icon"]');
+            
+                if (!favicon) {
+                    favicon = document.createElement('link');
+                    favicon.setAttribute('rel', 'shortcut icon');
+                    var head = document.querySelector('head');
+                    head.appendChild(favicon);
+                }
+                favicon.setAttribute('type', 'image/png');
+                favicon.setAttribute('href', img);
+            }
+            //run the change icon function
+            change_favicon('icons/VDI/VDI_logo_backed.png');
+
+            //--------------------------------------
+            // ------- Render parameters -----------
+            //--------------------------------------
+            var render = function () 
+            {
+                requestAnimationFrame(render);
+                sphere.rotation.y += 0.01;   //sphere rotation speed
+                cylinder.rotation.x += 0.01; //cylinder rotation speed
+                cone.rotation.z += 0.01;     //cone rotation speed
+                earth.rotation.y += 0.05;    //earth rotation speed
+                cube.rotation.y += 0.01;     //cube rotation speed
+                renderer.render(scene, camera);		
+            };
+        controls.update();
+        render();     
+</script>
+
 </div>
 <script>
 function TakeMeToBack() {

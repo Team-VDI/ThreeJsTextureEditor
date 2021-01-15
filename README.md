@@ -1,3 +1,3 @@
 # ThreeJsTextureEditor
 
-hello, 3D web thingz
+3D object viewer using WebGL and the Three.js graphical library

@@ -101,47 +101,69 @@
 </div>
   
 <!------------Scripts------------>
-<script>
-function intro() {
-  document.getElementById("text").innerHTML = "Intro text about us and this amazing subject.";
-}
-function ShowText1() {
-  document.getElementById("text").innerHTML = "3D Object Viewer text";
-}
-function ShowText2() {
-  document.getElementById("text").innerHTML = "Multiple Objects text";
-}
-function ShowText3() {
-  document.getElementById("text").innerHTML = "3D Text Viewer text";
-}
-function ShowText4() {
-  document.getElementById("text").innerHTML = "Texture Editor text";
-}
-function ShowText5() {
-  document.getElementById("text").innerHTML = "Object Interactivity text";
-}
-  
-function TakeMeTo1() {
-  //location.replace("http://localhost:8080/WEB/3DObjectViewer.html")
-  location.replace("3DObjectViewer.html")
-} 
-function TakeMeTo2() {
-  //location.replace("http://localhost:8080/WEB/MultipleObjects.html")
-  location.replace("MultipleObjects.html")
-} 
-  function TakeMeTo3() {
-  //location.replace("http://localhost:8080/WEB/3DTextViewer.html")
-  location.replace("3DTextViewer.html")
-} 
-  function TakeMeTo4() {
-  //location.replace("http://localhost:8080/WEB/TextureEditor.html")
-  location.replace("TextureEditor.html")
-} 
-  function TakeMeTo5() {
-  //location.replace("http://localhost:8080/WEB/ObjectInteractivity.html")
-  location.replace("ObjectInteractivity.html")
-} 
-</script> 
+  <script>
+  function intro() {
+    document.getElementById("text").innerHTML = "This 3D model viewing and texturing WEB aplication was created during the course subject <br> <i>''Computer graphics on the internet''</i> . <br> Select one of the option <b>buttons</b> to see the selected scene description. <br> Select the  <b>-Open Example-</b>  button to open the scene! <br><br>Application made by Evija Cibuļska and Anete Dowling"}
+
+    function ShowText1() {
+    document.getElementById("text").innerHTML = "<b>3D Object Viewer</b><br><br> The 3D object viewer scene consists of a 3D sphere the user can interactively rotate and change it's parameters, such as it's material colour, opacity, position etc.!";
+  }
+
+  function ShowText2() {
+    document.getElementById("text").innerHTML = "<b>Multiple Objects</b><br><br> The 3D scene consists of multiple 3D objects (sphere, cylinder, cube, textured elements)";
+  }
+
+  function ShowText3() {
+    document.getElementById("text").innerHTML = "<b>3D Text Viewer</b><br><br> The 3D scene consists of an interactable 3D text with additional options to change the font, boldness, colour, lighting of the text and to play a rotation animation of the object!";
+  }
+
+  function ShowText4() {
+    document.getElementById("text").innerHTML = "<b>Texture Editor</b><br><br> The Texture editor scene consists of a cube which texture can be changed by clicking on the scene with the mouse!";
+  }
+
+  function ShowText5() {
+    document.getElementById("text").innerHTML = "<b>Object Interactivity</b><br><br> The object interactivity scene consists of an empty plane on which the user can place textured cubes!";
+  }
+    
+  function TakeMeTo1() {
+    //location.replace("http://localhost:8080/WEB/3DObjectViewer.html")
+    location.replace("3DObjectViewer.html")
+  } 
+  function TakeMeTo2() {
+    //location.replace("http://localhost:8080/WEB/MultipleObjects.html")
+    location.replace("MultipleObjects.html")
+  } 
+    function TakeMeTo3() {
+    //location.replace("http://localhost:8080/WEB/3DTextViewer.html")
+    location.replace("3DTextViewer.html")
+  } 
+    function TakeMeTo4() {
+    //location.replace("http://localhost:8080/WEB/TextureEditor.html")
+    location.replace("TextureEditor.html")
+  } 
+    function TakeMeTo5() {
+    //location.replace("http://localhost:8080/WEB/ObjectInteractivity.html")
+    location.replace("ObjectInteractivity.html")
+  } 
+
+  //--------------------------------------
+  // ---------- Set Favicon --------------
+  //--------------------------------------
+  function change_favicon(img) {
+  var favicon = document.querySelector('link[rel="shortcut icon"]');
+                  
+    if (!favicon) {
+        favicon = document.createElement('link');
+        favicon.setAttribute('rel', 'shortcut icon');
+        var head = document.querySelector('head');
+        head.appendChild(favicon);
+      }
+        favicon.setAttribute('type', 'image/png');
+        favicon.setAttribute('href', img);
+    }
+    //run the change icon function
+    change_favicon('icons/VDI/VDI_logo_backed.png');
+  </script> 
 </body>
 </html>
 

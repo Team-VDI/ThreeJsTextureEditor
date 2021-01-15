@@ -7,57 +7,214 @@
 <link href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@700&display=swap" rel="stylesheet">
 <link rel="preconnect" href="https://fonts.gstatic.com"> 
 <link href="https://fonts.googleapis.com/css2?family=Open+Sans&family=Roboto+Condensed&display=swap" rel="stylesheet">
+
 <title>WebGL</title>
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+
+<! -- Three.js bibliotēku importēšana -->
+<script src="libs/three.js"></script>
+<script src="libs/dat.gui.js"></script>
+<script src="libs/three.min.js"></script>
+<script src="libs/three.module.js"></script>
+<script src="libs/OrbitControls.js"></script>
+
+<! -- JQUERY bibliotēku importēšana -->
+<script src="https://code.jquery.com/jquery-2.2.4.js"></script>
+
 <style>
-	body {
-		color: #fff;
-		background: #2D2727;
-		font-family: 'Roboto', sans-serif;
-    text-align: center;
-	}
-  h1{
-    color: #187F8C;
-    font-size: 55px;
-    font-family: 'Aref Ruqaa', serif;
-    
-  }
-  .btn1 {
-    font-family: 'Roboto Condensed', sans-serif;
-    background-color: #554C4C;
-    border: none;
-    color: white;
-    padding: 2px 30px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    margin: 4px 2px;
-    cursor: pointer;
-  } 
-</style>
+        body {
+            color: #fff;
+            background: #2D2727;
+            font-family: 'Roboto', sans-serif;
+            text-align: center;
+            }
+          h1{
+            color: #187F8C;
+            font-size: 55px;
+            font-family: 'Aref Ruqaa', serif;
+            
+          }
+          .btn1 {
+            font-family: 'Roboto Condensed', sans-serif;
+            background-color: #554C4C;
+            border: none;
+            color: white;
+            padding: 2px 30px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+          } 
+        </style>
+	</style>
 </head>
+
 <!------------Body------------>
 <body>
 <br><br>
 <h1>OBJECT INTERACTIVITY</h1>
 <div class="button">
   <button class="btn1" type="submit" onclick="TakeMeToBack()"> Back </br> <<< </button>
-  <button class="btn1" type="submit" onclick="TakeMeToNext()">Next </br> >>> </button>
+  <button class="btn1" type="submit" onclick="TakeMeToNext()"> Next </br> >>> </button>
 </div><br><br>
-<div class="container">
-  <!----In this container you copy all the shit.-----> 
-</div>
-<script>
-function TakeMeToBack() {
-  //location.replace("http://localhost:8080/WEB/index.html")
-  location.replace("index.html")
-} 
-function TakeMeToNext() {
-  //location.replace("http://localhost:8080/WEB/3DObjectViewer.html")
-  location.replace("3DObjectViewer.html")
-} 
-</script>
-</body>
+		<script type="module">
+        import * as THREE from "/libs/three.module.js";
+        let camera, scene, renderer;
+        let plane;
+        let mouse, raycaster, isShiftDown = false;
+        let rollOverMesh, rollOverMaterial;
+        let cubeGeo, cubeMaterial;
+        const objects = [];
+
+        init();
+        render();
+
+        function init() {
+          //--------------------------------------
+          // --------Camera parameters -----------
+          //--------------------------------------
+          camera = new THREE.PerspectiveCamera(30, window.innerWidth / window.innerHeight, 1, 10000 );
+          camera.position.set(0, 800, 1300);
+          camera.lookAt(0,0,0);
+          //--------------------------------------
+          // --------Scene parameters -----------
+          //--------------------------------------
+          scene = new THREE.Scene();
+          scene.background = new THREE.Color(0x2D2727);
+          const rollOverGeo = new THREE.BoxBufferGeometry(50,50,50);
+          rollOverMaterial = new THREE.MeshBasicMaterial({color: 0xFF0000, opacity: 0.5, transparent: true});
+          rollOverMesh = new THREE.Mesh( rollOverGeo, rollOverMaterial );
+          scene.add(rollOverMesh);
+
+          // cube nase and texture definiton
+          cubeGeo = new THREE.BoxBufferGeometry(50, 50, 50);
+          cubeMaterial = new THREE.MeshLambertMaterial({ color: 0xfeb74c, map: new THREE.TextureLoader().load('textures/box_textures/grumpy.jpg' )});
+
+          // grid
+          const gridHelper = new THREE.GridHelper(1000, 20);
+          scene.add(gridHelper);
+          raycaster = new THREE.Raycaster();
+          mouse = new THREE.Vector2();
+          const geometry = new THREE.PlaneBufferGeometry( 1000, 1000 );
+          geometry.rotateX( - Math.PI / 2 );
+          plane = new THREE.Mesh( geometry, new THREE.MeshBasicMaterial( { visible: false } ) );
+          scene.add(plane);
+          objects.push(plane);
+          
+          // lighting
+          const ambientLight = new THREE.AmbientLight(0x606060);
+          scene.add( ambientLight );
+          const directionalLight = new THREE.DirectionalLight(0xffffff);
+          directionalLight.position.set( 1, 0.75, 0.5 ).normalize();
+          scene.add( directionalLight );
+          
+          //--------------------------------------
+          // ------- Render parameters -----------
+          //--------------------------------------  
+          renderer = new THREE.WebGLRenderer( { antialias: true } );
+          renderer.setPixelRatio( window.devicePixelRatio );
+          renderer.setSize( window.innerWidth, window.innerHeight );
+          document.body.appendChild( renderer.domElement );
+          document.addEventListener('mousemove', onDocumentMouseMove, false );
+          document.addEventListener('mousedown', onDocumentMouseDown, false );
+          document.addEventListener('keydown', onDocumentKeyDown, false );
+          document.addEventListener('keyup', onDocumentKeyUp, false );
+          window.addEventListener('resize', onWindowResize, false );
+        }
+        
+        function onWindowResize() {
+          camera.aspect = window.innerWidth / window.innerHeight;
+          camera.updateProjectionMatrix();
+          renderer.setSize( window.innerWidth, window.innerHeight );
+        }
+
+        function onDocumentMouseMove( event ) {
+          event.preventDefault();
+          mouse.set( ( event.clientX / window.innerWidth ) * 2 - 1, - ( event.clientY / window.innerHeight ) * 2 + 1 );
+          raycaster.setFromCamera( mouse, camera );
+          const intersects = raycaster.intersectObjects( objects );
+          if ( intersects.length > 0 ) {
+            const intersect = intersects[ 0 ];
+            rollOverMesh.position.copy( intersect.point ).add( intersect.face.normal );
+            rollOverMesh.position.divideScalar( 50 ).floor().multiplyScalar( 50 ).addScalar( 25 );
+          }
+        render();
+
+        }
+
+        function onDocumentMouseDown( event ) {
+          event.preventDefault();
+          mouse.set( ( event.clientX / window.innerWidth ) * 2 - 1, - ( event.clientY / window.innerHeight ) * 2 + 1 );
+          raycaster.setFromCamera( mouse, camera );
+          const intersects = raycaster.intersectObjects( objects );
+          if ( intersects.length > 0 ) {
+            const intersect = intersects[ 0 ];
+            // delete cube
+            if ( isShiftDown ) {
+              if ( intersect.object !== plane ) {
+                scene.remove( intersect.object );
+                objects.splice( objects.indexOf( intersect.object ), 1 );
+              }
+              // create cube
+            } else {
+              const voxel = new THREE.Mesh( cubeGeo, cubeMaterial );
+              voxel.position.copy( intersect.point ).add( intersect.face.normal );
+              voxel.position.divideScalar( 50 ).floor().multiplyScalar( 50 ).addScalar( 25 );
+              scene.add( voxel );
+              objects.push( voxel );
+            }
+            render();
+          }
+        }
+
+          function onDocumentKeyDown( event ) {
+            switch ( event.keyCode ) {
+              case 16: isShiftDown = true; break;
+            }
+                }
+                
+          function onDocumentKeyUp( event ) {
+            switch ( event.keyCode ) {
+              case 16: isShiftDown = false; break;
+            }
+          }
+
+            function render() {
+              renderer.render( scene, camera );
+            }
+            render()
+            
+            //--------------------------------------
+            // ---------- Set Favicon --------------
+            //--------------------------------------
+            function change_favicon(img) {
+                var favicon = document.querySelector('link[rel="shortcut icon"]');
+                                
+                if (!favicon) {
+                    favicon = document.createElement('link');
+                    favicon.setAttribute('rel', 'shortcut icon');
+                    var head = document.querySelector('head');
+                    head.appendChild(favicon);
+                    }
+                    favicon.setAttribute('type', 'image/png');
+                    favicon.setAttribute('href', img);
+                }
+                //run the change icon function
+                change_favicon('icons/VDI/VDI_logo_backed.png');
+        </script>
+        
+        <script>
+            function TakeMeToBack() {
+              //location.replace("http://localhost:8080/WEB/index.html")
+              location.replace("index.html")
+            } 
+            function TakeMeToNext() {
+              //location.replace("http://localhost:8080/WEB/3DObjectViewer.html")
+              location.replace("3DObjectViewer.html")
+            }
+        </script>
+	</body>
 </html>

@@ -11,6 +11,17 @@
 <title>WebGL</title>
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+
+<! -- THEE.JS bibliotēku importēšana -->
+<script src="libs/three.js"></script>
+<script src="libs/dat.gui.js"></script>
+<script src="libs/three.min.js"></script>
+<script src="libs/three.module.js"></script>
+<script src="libs/OrbitControls.js"></script>  
+
+<! -- JQUERY bibliotēku importēšana -->
+<script src="https://code.jquery.com/jquery-2.2.4.js"></script> 
+
 <style>
 	body {
 		color: #fff;
@@ -49,8 +60,113 @@
   <button class="btn1" type="submit" onclick="TakeMeToNext()">Next </br> >>> </button>
 </div><br><br>
 <div class="container">
-  <!----In this container you copy all the shit.-----> 
+  <script>     
+    scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x2D2727);
+
+    var camera = new THREE.PerspectiveCamera(20, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.z = 5;
+    camera.position.y = 5;
+    camera.position.x = 5;
+    camera.lookAt(new THREE.Vector3(0,0,0)); // Make the camera look at the point of origin
+
+    var renderer = new THREE.WebGLRenderer({antialias:true});
+    var devicePixelRatio = window.devicePixelRatio || 1; // To handle high pixel density displays
+
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+    //interactive camera controls
+    var controls = new THREE.OrbitControls(camera, renderer.domElement);
+
+    var render = function () 
+    {
+      requestAnimationFrame(render);
+      renderer.setClearColorHex(0x2D2727, 1);
+      renderer.render(scene, camera);
+    };
+
+    // instantiate a texture loader
+    var loader = new THREE.TextureLoader();
+    //allow cross origin loading
+    loader.crossOrigin = '';
+
+    // Texture array that holds all of the textures we can switch to 
+    var arr = [
+    'textures/box_textures/THREE_gates.jpg',
+    'textures/box_textures/THREE_crate1.jpg',
+    'textures/box_textures/THREE_crate2.jpg',
+    'textures/box_textures/box_texture.jpg',
+    'textures/box_textures/nail_box.jpeg',
+    'textures/box_textures/shiny_box.jpeg',
+    'textures/box_textures/other_box.jpeg',
+    'textures/box_textures/kitty.jpg',
+    'textures/box_textures/bread_cat.jpg',
+    'textures/box_textures/grumpy.jpg'
+    ];
+
+    var textureToShow = 0;
+
+    // Instantiate the material we will be using
+    var material = new THREE.MeshBasicMaterial();
+    // Instantiate a geometry to use
+    var geometry = new THREE.BoxGeometry( 1, 1, 1 );
+    // Instatiate the mesh with the geometry and material
+    var cube = new THREE.Mesh( geometry, material );
+    cube.position.y = 0.5;
+
+    // Then load the texture
+    loader.load(arr[textureToShow], function(tex) {
+    // Once the texture has loaded
+    // Asign it to the material
+    material.map = tex;
+    // Update the next texture to show
+    textureToShow++;
+    // Add the mesh into the 
+    scene.add(cube);
+    });
+
+
+    // Click interaction
+    var canvas = document.getElementsByTagName("canvas")[0];
+
+    canvas.addEventListener("click", function() {
+        loader.load(arr[textureToShow], function(tex) {
+            // Once the texture has loaded asign it to the material
+            material.map = tex;
+            // Update the next texture to show rn
+            textureToShow++;
+            // Have we got to the end of the textures array
+            if(textureToShow > arr.length-1) {
+                textureToShow = 0;
+            }
+            
+        }); 
+    });
+
+    // Start rendering the scene
+    controls.update();
+    render();
+
+    //--------------------------------------
+    // ---------- Set Favicon --------------
+    //--------------------------------------
+    function change_favicon(img) {
+      var favicon = document.querySelector('link[rel="shortcut icon"]');
+                    
+        if (!favicon) {
+          favicon = document.createElement('link');
+          favicon.setAttribute('rel', 'shortcut icon');
+          var head = document.querySelector('head');
+          head.appendChild(favicon);
+        }
+          favicon.setAttribute('type', 'image/png');
+          favicon.setAttribute('href', img);
+      }
+      //run the change icon function
+      change_favicon('icons/VDI/VDI_logo_backed.png');  
+</script>
 </div>
+
 <script>
 function TakeMeToBack() {
   //location.replace("http://localhost:8080/WEB/index.html")

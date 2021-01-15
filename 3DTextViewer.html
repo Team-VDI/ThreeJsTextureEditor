@@ -25,6 +25,13 @@
     font-family: 'Aref Ruqaa', serif;
     
   }
+  p{
+    color: #FF5733;
+    margin: 4px 2px;
+    font-size: 20px;
+    font-family: 'Roboto', sans-serif;
+    
+  }
   .btn1 {
     font-family: 'Roboto Condensed', sans-serif;
     background-color: #554C4C;
@@ -37,7 +44,33 @@
     font-size: 16px;
     margin: 4px 2px;
     cursor: pointer;
-} 
+  } 
+  .btn2 {
+    font-family: 'Roboto Condensed', sans-serif;
+    background-color: #554C4C;
+    border: none;
+    color: white;
+    padding: 10px 25px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+  }
+  .btn3 {
+    font-family: 'Roboto Condensed', sans-serif;
+    background-color: #F46036;
+    border: none;
+    color: white;
+    padding: 10px 25px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+  }
 </style>
 
   <! -- THEE.JS bibliotēku importēšana -->
@@ -58,18 +91,17 @@
 <div class="button">
   <button class="btn1" type="submit" onclick="TakeMeToBack()"> Back </br> <<< </button>
   <button class="btn1" type="submit" onclick="TakeMeToNext()">Next </br> >>> </button>
-</div><br><br>
-
+</div>
 <div class="container">
-  <p>Izmanto pogas, lai mainītu teksta parametrus - izmanto peli, lai rotētu tekstu! </p>
-  <p>Tekstu iespējams izmanīt ierakstot to - tekstu iespējams izdzēst izmantojot "Backspace" pogu!</p>
+  <p>To change the text - use the buttons! | To rotate the text - use the mouse! | To change text - use "Backspace" button!
+  </p>
   <center>
-    <button id="color">Mainīt krāsu</button>
-    <button id="font">Mainīt fontu</button>
-    <button id="weight">Biezums</button>
-    <button id="bevel">Nogludināt</button>
-    <button id="lighting">Apgaismojums</button>
-    <button id="animation">Animācija</button>
+    <button class="btn2" id="color">Color</button>
+    <button class="btn3" id="font">Font</button>
+    <button class="btn2" id="weight">Thickness</button>
+    <button class="btn3" id="bevel">Smoothness</button>
+    <button class="btn2" id="lighting">Lighting</button>
+    <button class="btn3" id="animation">Animation</button>
     <a id="permalink" href="#"></a>
   </center>
 
